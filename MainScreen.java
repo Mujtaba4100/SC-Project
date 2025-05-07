@@ -2,11 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-public class MainScreen extends javax.swing.JFrame {
+public class MainScreen extends JFrame {
 
     private Model model; // Model for storing courses
-    private JTextField passedCourseField, failedCourseField, improveCourseField;
+    private ArrayList<String> selectedCourses;
+    private JTextArea selectedCoursesArea;
 
     public MainScreen(Model model) {
         this.model = model;
@@ -19,133 +21,114 @@ public class MainScreen extends javax.swing.JFrame {
         JLabel failedLabel = new JLabel("Failed Courses");
         JLabel improveLabel = new JLabel("Courses to Improve");
 
-        // Text Fields to add courses
-        passedCourseField = new JTextField(20);
-        failedCourseField = new JTextField(20);
-        improveCourseField = new JTextField(20);
+        // Create DefaultListModel to dynamically update the JList
+        DefaultListModel<String> passedModel = new DefaultListModel<>();
+        DefaultListModel<String> failedModel = new DefaultListModel<>();
+        DefaultListModel<String> improveModel = new DefaultListModel<>();
 
-        // Buttons to add courses
-        JButton addPassedCourseButton = new JButton("Add Passed Course");
-        JButton addFailedCourseButton = new JButton("Add Failed Course");
-        JButton addImproveCourseButton = new JButton("Add Course to Improve");
+        // Add courses to the DefaultListModel
+        for (String course : model.getPassedCourses()) {
+            passedModel.addElement(course);
+        }
 
-        // Course Lists (JList)
-        JList<String> passedCoursesList = new JList<>(model.getPassedCourses().toArray(new String[0]));
-        JList<String> failedCoursesList = new JList<>(model.getFailedCourses().toArray(new String[0]));
-        JList<String> improveCoursesList = new JList<>(model.getCoursesToImprove().toArray(new String[0]));
+        for (String course : model.getFailedCourses()) {
+            failedModel.addElement(course);
+        }
 
+        for (String course : model.getCoursesToImprove()) {
+            improveModel.addElement(course);
+        }
+
+        // JList for the courses
+        JList<String> passedCoursesList = new JList<>(passedModel);
+        JList<String> failedCoursesList = new JList<>(failedModel);
+        JList<String> improveCoursesList = new JList<>(improveModel);
+
+        // Scroll panes for the lists
         JScrollPane passedScroll = new JScrollPane(passedCoursesList);
         JScrollPane failedScroll = new JScrollPane(failedCoursesList);
         JScrollPane improveScroll = new JScrollPane(improveCoursesList);
 
-        // Setting up fonts and colors
-        Font font = new Font("Arial", Font.PLAIN, 16);
-        passedCourseField.setFont(font);
-        failedCourseField.setFont(font);
-        improveCourseField.setFont(font);
+        // Button to add courses to the bucket
+        JButton addCourseButton = new JButton("Add Selected Course");
 
-        // Action Listeners for Buttons
-        addPassedCourseButton.addActionListener(new ActionListener() {
+        selectedCourses = new ArrayList<>();
+        selectedCoursesArea = new JTextArea(5, 20);
+        selectedCoursesArea.setEditable(false);
+        JScrollPane selectedScroll = new JScrollPane(selectedCoursesArea);
+
+        // Action listener for the add course button
+        addCourseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String course = passedCourseField.getText().trim();
-                if (!course.isEmpty()) {
-                    model.addPassedCourse(course);
-                    passedCoursesList.setListData(model.getPassedCourses().toArray(new String[0]));
-                    passedCourseField.setText("");
-                } else {
-                    JOptionPane.showMessageDialog(MainScreen.this, "Course name cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                String selectedCourse = passedCoursesList.getSelectedValue();
+                if (selectedCourse != null && !selectedCourses.contains(selectedCourse)) {
+                    int totalCredits = calculateTotalCredits();
+                    if (totalCredits + 3 > 18) {
+                        JOptionPane.showMessageDialog(MainScreen.this, "You cannot select more than 18 credit hours!", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        selectedCourses.add(selectedCourse);
+                        updateSelectedCoursesArea();
+                    }
                 }
             }
         });
 
-        addFailedCourseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String course = failedCourseField.getText().trim();
-                if (!course.isEmpty()) {
-                    model.addFailedCourse(course);
-                    failedCoursesList.setListData(model.getFailedCourses().toArray(new String[0]));
-                    failedCourseField.setText("");
-                } else {
-                    JOptionPane.showMessageDialog(MainScreen.this, "Course name cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        addImproveCourseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String course = improveCourseField.getText().trim();
-                if (!course.isEmpty()) {
-                    model.addCourseToImprove(course);
-                    improveCoursesList.setListData(model.getCoursesToImprove().toArray(new String[0]));
-                    improveCourseField.setText("");
-                } else {
-                    JOptionPane.showMessageDialog(MainScreen.this, "Course name cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        // Layout setup using GridBagLayout for better flexibility
+        // Layout setup using GridBagLayout
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        // Passed Courses Section
+        // Adding components to the layout
         gbc.gridx = 0;
         gbc.gridy = 0;
         add(passedLabel, gbc);
-
         gbc.gridx = 1;
         add(passedScroll, gbc);
 
-        gbc.gridx = 2;
-        add(passedCourseField, gbc);
-
-        gbc.gridx = 3;
-        add(addPassedCourseButton, gbc);
-
-        // Failed Courses Section
         gbc.gridx = 0;
         gbc.gridy = 1;
         add(failedLabel, gbc);
-
         gbc.gridx = 1;
         add(failedScroll, gbc);
 
-        gbc.gridx = 2;
-        add(failedCourseField, gbc);
-
-        gbc.gridx = 3;
-        add(addFailedCourseButton, gbc);
-
-        // Courses to Improve Section
         gbc.gridx = 0;
         gbc.gridy = 2;
         add(improveLabel, gbc);
-
         gbc.gridx = 1;
         add(improveScroll, gbc);
 
-        gbc.gridx = 2;
-        add(improveCourseField, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        add(addCourseButton, gbc);
 
-        gbc.gridx = 3;
-        add(addImproveCourseButton, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        add(selectedScroll, gbc);
 
         // Window setup
-        setTitle("Manage Your Courses");
+        setTitle("Course Selection");
         setSize(800, 600);
         setLocationRelativeTo(null); // Center on screen
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    public static void main(String[] args) {
-        // Initialize model
-        Model model = new Model();
+    // Method to calculate total credit hours
+    private int calculateTotalCredits() {
+        return selectedCourses.size() * 3; // Each course is 3 credit hours (for simplicity)
+    }
 
-        // Instantiate MainScreen and pass the model
+    // Update the selected courses area
+    private void updateSelectedCoursesArea() {
+        StringBuilder sb = new StringBuilder();
+        for (String course : selectedCourses) {
+            sb.append(course).append("\n");
+        }
+        selectedCoursesArea.setText(sb.toString());
+    }
+
+    public static void main(String[] args) {
+        Model model = new Model();
         MainScreen viewMainScreen = new MainScreen(model);
         viewMainScreen.setVisible(true);
     }
