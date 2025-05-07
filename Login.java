@@ -1,4 +1,4 @@
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 public class Login extends javax.swing.JFrame {
 
@@ -104,11 +104,8 @@ public class Login extends javax.swing.JFrame {
 
     // Action for Signup Button
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
-        String username = jTextField1.getText();
-        String password = new String(jPasswordField1.getPassword());
-
-        // Pass data to the controller to handle signup
-        controller.handleSignup(username, password);
+        // Open the Signup screen
+        controller.openSignupScreen();
     }
 
     // Show error message

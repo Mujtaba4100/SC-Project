@@ -1,96 +1,152 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MainScreen extends javax.swing.JFrame {
 
-    // Lists to hold courses
-    private ArrayList<String> passedCourses;
-    private ArrayList<String> failedCourses;
-    private ArrayList<String> coursesToImprove;
+    private Model model; // Model for storing courses
+    private JTextField passedCourseField, failedCourseField, improveCourseField;
 
-    public MainScreen() {
+    public MainScreen(Model model) {
+        this.model = model;
         initComponents();
     }
 
-    // Initialize components
-    @SuppressWarnings("unchecked")
     private void initComponents() {
-        jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        passedCoursesList = new javax.swing.JList<>();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        failedCoursesList = new javax.swing.JList<>();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        coursesToImproveList = new javax.swing.JList<>();
+        // Labels for each section
+        JLabel passedLabel = new JLabel("Passed Courses");
+        JLabel failedLabel = new JLabel("Failed Courses");
+        JLabel improveLabel = new JLabel("Courses to Improve");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Course Information");
+        // Text Fields to add courses
+        passedCourseField = new JTextField(20);
+        failedCourseField = new JTextField(20);
+        improveCourseField = new JTextField(20);
 
-        // Initialize course lists
-        passedCourses = new ArrayList<>();
-        failedCourses = new ArrayList<>();
-        coursesToImprove = new ArrayList<>();
+        // Buttons to add courses
+        JButton addPassedCourseButton = new JButton("Add Passed Course");
+        JButton addFailedCourseButton = new JButton("Add Failed Course");
+        JButton addImproveCourseButton = new JButton("Add Course to Improve");
 
-        // Sample courses (you can replace these with dynamic data)
-        passedCourses.add("Math 101");
-        passedCourses.add("Physics 102");
-        passedCourses.add("Computer Science 101");
+        // Course Lists (JList)
+        JList<String> passedCoursesList = new JList<>(model.getPassedCourses().toArray(new String[0]));
+        JList<String> failedCoursesList = new JList<>(model.getFailedCourses().toArray(new String[0]));
+        JList<String> improveCoursesList = new JList<>(model.getCoursesToImprove().toArray(new String[0]));
 
-        failedCourses.add("Biology 101");
-        failedCourses.add("History 102");
+        JScrollPane passedScroll = new JScrollPane(passedCoursesList);
+        JScrollPane failedScroll = new JScrollPane(failedCoursesList);
+        JScrollPane improveScroll = new JScrollPane(improveCoursesList);
 
-        coursesToImprove.add("Chemistry 101");
-        coursesToImprove.add("English 102");
+        // Setting up fonts and colors
+        Font font = new Font("Arial", Font.PLAIN, 16);
+        passedCourseField.setFont(font);
+        failedCourseField.setFont(font);
+        improveCourseField.setFont(font);
 
-        // Set up JList for passed courses
-        passedCoursesList.setListData(passedCourses.toArray(new String[0]));
-        jScrollPane1.setViewportView(passedCoursesList);
-
-        // Set up JList for failed courses
-        failedCoursesList.setListData(failedCourses.toArray(new String[0]));
-        jScrollPane2.setViewportView(failedCoursesList);
-
-        // Set up JList for courses to improve
-        coursesToImproveList.setListData(coursesToImprove.toArray(new String[0]));
-        jScrollPane3.setViewportView(coursesToImproveList);
-
-        // Use GridLayout to arrange the lists side by side
-        jPanel1.setLayout(new GridLayout(1, 3, 10, 10));  // 1 row, 3 columns, with 10px horizontal and vertical gaps
-        jPanel1.add(jScrollPane1); // Passed Courses
-        jPanel1.add(jScrollPane2); // Failed Courses
-        jPanel1.add(jScrollPane3); // Courses to Improve
-
-        // Add panel to the frame
-        getContentPane().add(jPanel1, BorderLayout.CENTER);
-
-        // Set a larger window size to approximate 14 inches
-        setSize(1400, 800); // Adjusting window size (approx 14.0 inches on screen)
-        setVisible(true);  // Make the window visible
-    }
-
-    // Method to update the course lists when data is modified
-    public void updateCourseLists() {
-        // Refresh the list data when the courses are updated
-        passedCoursesList.setListData(passedCourses.toArray(new String[0]));
-        failedCoursesList.setListData(failedCourses.toArray(new String[0]));
-        coursesToImproveList.setListData(coursesToImprove.toArray(new String[0]));
-    }
-
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainScreen().setVisible(true);
+        // Action Listeners for Buttons
+        addPassedCourseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String course = passedCourseField.getText().trim();
+                if (!course.isEmpty()) {
+                    model.addPassedCourse(course);
+                    passedCoursesList.setListData(model.getPassedCourses().toArray(new String[0]));
+                    passedCourseField.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(MainScreen.this, "Course name cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
+
+        addFailedCourseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String course = failedCourseField.getText().trim();
+                if (!course.isEmpty()) {
+                    model.addFailedCourse(course);
+                    failedCoursesList.setListData(model.getFailedCourses().toArray(new String[0]));
+                    failedCourseField.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(MainScreen.this, "Course name cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        addImproveCourseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String course = improveCourseField.getText().trim();
+                if (!course.isEmpty()) {
+                    model.addCourseToImprove(course);
+                    improveCoursesList.setListData(model.getCoursesToImprove().toArray(new String[0]));
+                    improveCourseField.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(MainScreen.this, "Course name cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        // Layout setup using GridBagLayout for better flexibility
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        // Passed Courses Section
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        add(passedLabel, gbc);
+
+        gbc.gridx = 1;
+        add(passedScroll, gbc);
+
+        gbc.gridx = 2;
+        add(passedCourseField, gbc);
+
+        gbc.gridx = 3;
+        add(addPassedCourseButton, gbc);
+
+        // Failed Courses Section
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        add(failedLabel, gbc);
+
+        gbc.gridx = 1;
+        add(failedScroll, gbc);
+
+        gbc.gridx = 2;
+        add(failedCourseField, gbc);
+
+        gbc.gridx = 3;
+        add(addFailedCourseButton, gbc);
+
+        // Courses to Improve Section
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        add(improveLabel, gbc);
+
+        gbc.gridx = 1;
+        add(improveScroll, gbc);
+
+        gbc.gridx = 2;
+        add(improveCourseField, gbc);
+
+        gbc.gridx = 3;
+        add(addImproveCourseButton, gbc);
+
+        // Window setup
+        setTitle("Manage Your Courses");
+        setSize(800, 600);
+        setLocationRelativeTo(null); // Center on screen
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    // Variables declaration
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JList<String> passedCoursesList;
-    private javax.swing.JList<String> failedCoursesList;
-    private javax.swing.JList<String> coursesToImproveList;
+    public static void main(String[] args) {
+        // Initialize model
+        Model model = new Model();
+
+        // Instantiate MainScreen and pass the model
+        MainScreen viewMainScreen = new MainScreen(model);
+        viewMainScreen.setVisible(true);
+    }
 }

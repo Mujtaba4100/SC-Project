@@ -2,7 +2,8 @@ public class Controller {
 
     private Model model;
     private Login viewLogin;
-    private MainScreen viewMainScreen;  // Move this to controller
+    private MainScreen viewMainScreen;  // Main screen view
+    private Signup viewSignup;  // Signup screen view
 
     public Controller(Model model, Login viewLogin) {
         this.model = model;
@@ -15,7 +16,7 @@ public class Controller {
             viewLogin.dispose();  // Close Login window after successful login
 
             // Instantiate MainScreen (MainScreen) only after successful login
-            viewMainScreen = new MainScreen();
+            viewMainScreen = new MainScreen(model);
             viewMainScreen.setVisible(true);  // Show MainScreen screen after login
         } else {
             viewLogin.showError("Invalid Username or Password");
@@ -24,23 +25,18 @@ public class Controller {
 
     // Handle user signup
     public void handleSignup(String username, String password) {
-        model.setUserCredentials(username, password);
+        model.setUserCredentials(username, password); // Store user credentials
+        viewSignup.dispose(); // Close the signup window
         viewLogin.showSuccess("Signup Successful! Please Login.");
+        viewLogin.setVisible(true); // Show login screen after signup
     }
 
-    // Handle adding courses
-    public void addPassedCourse(String course) {
-        model.addPassedCourse(course);
-        viewMainScreen.updateCourseLists();  // Update the view with new course lists
-    }
-
-    public void addFailedCourse(String course) {
-        model.addFailedCourse(course);
-        viewMainScreen.updateCourseLists();  // Update the view with new course lists
-    }
-
-    public void addCourseToImprove(String course) {
-        model.addCourseToImprove(course);
-        viewMainScreen.updateCourseLists();  // Update the view with new course lists
+    // Open signup screen
+    public void openSignupScreen() {
+        // Open the Signup screen
+        viewSignup = new Signup();
+        viewSignup.setController(this);
+        viewSignup.setVisible(true); // Show Signup screen
+        viewLogin.setVisible(false); // Hide Login screen
     }
 }
