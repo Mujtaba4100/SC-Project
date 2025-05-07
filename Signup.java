@@ -1,37 +1,36 @@
 import javax.swing.*;
 
 public class Signup extends javax.swing.JFrame {
+    // Simulating user data storage (in memory)
+    public static String savedUsername;
+    public static String savedPassword;
 
-    // Creates new form Signup
     public Signup() {
         initComponents();
     }
 
-    // Initialize the components
+    // Initialize components
     @SuppressWarnings("unchecked")
     private void initComponents() {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField(); // Username TextField
-        jPasswordField1 = new javax.swing.JPasswordField(); // Password Field
-        jButton1 = new javax.swing.JButton(); // Signup Button
+        jTextField1 = new javax.swing.JTextField(); // Username field
+        jPasswordField1 = new javax.swing.JPasswordField(); // Password field
+        jButton1 = new javax.swing.JButton(); // Signup button
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Fira Sans", 0, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Fira Sans", 0, 18));
         jLabel1.setText("Username:");
 
-        jLabel2.setFont(new java.awt.Font("Fira Sans", 0, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Fira Sans", 0, 18));
         jLabel2.setText("Password:");
 
-        // Increase font size and set width for input fields
-        jTextField1.setFont(new java.awt.Font("Fira Sans", java.awt.Font.PLAIN, 20)); // Username font size
-        jTextField1.setPreferredSize(new java.awt.Dimension(300, 40)); // Increased width
+        // Set font and size for input fields
+        jTextField1.setFont(new java.awt.Font("Fira Sans", java.awt.Font.PLAIN, 20)); // Username
+        jPasswordField1.setFont(new java.awt.Font("Fira Sans", java.awt.Font.PLAIN, 20)); // Password
 
-        jPasswordField1.setFont(new java.awt.Font("Fira Sans", java.awt.Font.PLAIN, 20)); // Password font size
-        jPasswordField1.setPreferredSize(new java.awt.Dimension(300, 40)); // Increased width
-
-        jButton1.setFont(new java.awt.Font("Fira Sans", 0, 18)); // NOI18N
+        jButton1.setFont(new java.awt.Font("Fira Sans", 0, 18));
         jButton1.setText("Signup");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -77,16 +76,22 @@ public class Signup extends javax.swing.JFrame {
         pack();
     }
 
-    // Action for Signup Button
+    // Handle signup action
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
         String username = jTextField1.getText();
         String password = new String(jPasswordField1.getPassword());
 
-        // You can save this information to a file or database here
-        JOptionPane.showMessageDialog(this, "Signup Successful! \nUsername: " + username, "Signup Success", JOptionPane.INFORMATION_MESSAGE);
-        
-        // After successful signup, close the signup window and return to the login page
+        // Save the username and password to static variables (simulating storage)
+        savedUsername = username;
+        savedPassword = password;
+
+        // Show success message and go to login page
+        JOptionPane.showMessageDialog(this, "Signup Successful!\nNow, go to Login", "Signup Success", JOptionPane.INFORMATION_MESSAGE);
+
+        // Close signup form and open login form
         this.dispose();
+        Login loginPage = new Login();
+        loginPage.setVisible(true);
     }
 
     public static void main(String args[]) {
