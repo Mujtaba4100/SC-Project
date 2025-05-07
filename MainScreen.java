@@ -69,6 +69,14 @@ public class MainScreen extends javax.swing.JFrame {
         setVisible(true);  // Make the window visible
     }
 
+    // Method to update the course lists when data is modified
+    public void updateCourseLists() {
+        // Refresh the list data when the courses are updated
+        passedCoursesList.setListData(passedCourses.toArray(new String[0]));
+        failedCoursesList.setListData(failedCourses.toArray(new String[0]));
+        coursesToImproveList.setListData(coursesToImprove.toArray(new String[0]));
+    }
+
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

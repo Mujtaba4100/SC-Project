@@ -1,9 +1,17 @@
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 public class Login extends javax.swing.JFrame {
 
+    private Controller controller;  // Controller reference
+
+    // Default constructor
     public Login() {
         initComponents();
+    }
+
+    // Set the controller to be used in this class
+    public void setController(Controller controller) {
+        this.controller = controller;
     }
 
     // Initialize components
@@ -90,35 +98,40 @@ public class Login extends javax.swing.JFrame {
         String username = jTextField1.getText();
         String password = new String(jPasswordField1.getPassword());
 
-        // Check if the entered username and password match the saved credentials
-        if (username.equals(Signup.savedUsername) && password.equals(Signup.savedPassword)) {
-            // Show success message and go to MainScreen screen
-            JOptionPane.showMessageDialog(this, "Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            // Open the MainScreen screen
-            MainScreen MainScreenPage = new MainScreen();
-            MainScreenPage.setVisible(true);
-            this.dispose(); // Close the login window
-        } else {
-            // If login fails, show an error message
-            JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        // Pass data to the controller to handle login
+        controller.handleLogin(username, password);
     }
 
     // Action for Signup Button
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
-        // Open the Signup form
-        Signup signupPage = new Signup();
-        signupPage.setVisible(true); // Show the signup form
-        this.setVisible(false); // Hide the login form
+        String username = jTextField1.getText();
+        String password = new String(jPasswordField1.getPassword());
+
+        // Pass data to the controller to handle signup
+        controller.handleSignup(username, password);
+    }
+
+    // Show error message
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // Show success message
+    public void showSuccess(String message) {
+        JOptionPane.showMessageDialog(this, message, "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Login().setVisible(true);
-            }
-        });
+        // Instantiate the Model and View classes
+        Model model = new Model();
+        Login viewLogin = new Login(); // Create Login view first
+
+        // Instantiate the Controller
+        Controller controller = new Controller(model, viewLogin);
+
+        // Now pass the controller to the Login view so it can be used for actions
+        viewLogin.setController(controller);
+        viewLogin.setVisible(true);
     }
 
     // Variables declaration

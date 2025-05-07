@@ -2,19 +2,21 @@ public class Controller {
 
     private Model model;
     private Login viewLogin;
-    private MainScreen viewMainScreen;
+    private MainScreen viewMainScreen;  // Move this to controller
 
-    public Controller(Model model, Login viewLogin, MainScreen viewMainScreen) {
+    public Controller(Model model, Login viewLogin) {
         this.model = model;
         this.viewLogin = viewLogin;
-        this.viewMainScreen = viewMainScreen;
     }
 
     // Handle user login
     public void handleLogin(String username, String password) {
         if (model.checkLoginCredentials(username, password)) {
-            viewLogin.dispose();  // Close login window
-            viewMainScreen.setVisible(true);  // Show MainScreen screen
+            viewLogin.dispose();  // Close Login window after successful login
+
+            // Instantiate MainScreen (MainScreen) only after successful login
+            viewMainScreen = new MainScreen();
+            viewMainScreen.setVisible(true);  // Show MainScreen screen after login
         } else {
             viewLogin.showError("Invalid Username or Password");
         }
@@ -29,16 +31,16 @@ public class Controller {
     // Handle adding courses
     public void addPassedCourse(String course) {
         model.addPassedCourse(course);
-        viewMainScreen.updateCourseLists();
+        viewMainScreen.updateCourseLists();  // Update the view with new course lists
     }
 
     public void addFailedCourse(String course) {
         model.addFailedCourse(course);
-        viewMainScreen.updateCourseLists();
+        viewMainScreen.updateCourseLists();  // Update the view with new course lists
     }
 
     public void addCourseToImprove(String course) {
         model.addCourseToImprove(course);
-        viewMainScreen.updateCourseLists();
+        viewMainScreen.updateCourseLists();  // Update the view with new course lists
     }
 }
